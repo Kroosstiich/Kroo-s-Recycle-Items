@@ -18,6 +18,7 @@ PACKAGE = BUILD / "package"
 VERSION = re.search(r"project\(KroosRecycleItems VERSION ([\d.]+)", (ROOT / "CMakeLists.txt").read_text()).group(1)
 
 IMAGE = r"fomod\images\banner.jpg"  # Nexus banner (tools/banner.png), resized
+GAME_LANGUAGES = ["ENGLISH", "FRENCH", "GERMAN", "ITALIAN", "SPANISH", "POLISH", "RUSSIAN", "JAPANESE", "CHINESE"]
 SETTINGS_INI = "MCM/Config/KroosRecycleItems/settings.ini"
 
 # Choices: flag value -> ini keys. The first one is the default.
@@ -200,11 +201,21 @@ def main():
 
     # Files every install gets.
     core = PACKAGE / "core"
-    shutil.copytree(DATA, core, ignore=shutil.ignore_patterns("settings.ini"))
+    shutil.copytree(DATA, core, ignore=shutil.ignore_patterns("settings.ini", "Translations"))
     (core / "SKSE" / "Plugins").mkdir(parents=True, exist_ok=True)
     shutil.copy2(dll, core / "SKSE" / "Plugins")
 
     patterns = []
+    # The language chosen on the first page is the mod's language too, whatever the game's language: its texts
+    # are installed under every game language's file name. A translation mod can still overwrite one of them.
+    for lang, source in (("en", "ENGLISH"), ("fr", "FRENCH")):
+        folder = f"options/lang-{lang}"
+        target = PACKAGE / folder / "Interface" / "Translations"
+        target.mkdir(parents=True)
+        for game_language in GAME_LANGUAGES:
+            shutil.copy2(DATA / "Interface" / "Translations" / f"KroosRecycleItems_{source}.txt",
+                         target / f"KroosRecycleItems_{game_language}.txt")
+        patterns.append(([("kri_lang", lang)], folder))
     for (mode, m), (cloth, c), (plates, p), (staves, s), (lv, l) in itertools.product(
             MODES.items(), CLOTHS.items(), PLATES.items(), STAVES.items(), STAFF_LEVELS.items()):
         folder = f"options/settings/{mode}-{cloth}-{plates}-staves{staves}-levels{lv}"
@@ -216,8 +227,8 @@ def main():
         patterns.append((flags, folder))
 
     language = step_xml("Language / Langue", [("Installer language / Langue de l'installateur", "kri_lang", [
-        ("en", "English", "Show this installer in English. The mod itself follows the game's language.", None),
-        ("fr", "Français", "Afficher cet installateur en français. Le mod lui-même suit la langue du jeu.", None),
+        ("en", "English", "The installer and the mod in English, whatever the game's language.", None),
+        ("fr", "Français", "L'installateur et le mod en français, quelle que soit la langue du jeu.", None),
     ])])
     steps = language + "".join(step_xml(name, groups, lang) for lang in ("fr", "en") for name, groups in TEXT[lang])
 
