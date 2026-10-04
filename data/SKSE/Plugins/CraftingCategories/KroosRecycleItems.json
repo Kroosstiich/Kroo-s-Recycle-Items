@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Exit-9B/CraftingCategories/main/docs/CraftingCategories.schema.json",
+  "sections": {
+    "$KRI_Recycling": {
+      "keywords": [ "KRI_Recycling" ],
+      "icon": { "source": "kroosrecycleitems/icons.swf", "label": "recycle" }
+    }
+  },
+  "categories": {
+    "$KRI_Weapons": { "section": "$KRI_Recycling", "keywords": [ "KRI_CatWeapons" ] },
+    "$KRI_Armor": { "section": "$KRI_Recycling", "keywords": [ "KRI_CatArmor" ] },
+    "$KRI_Jewelry": { "section": "$KRI_Recycling", "keywords": [ "KRI_CatJewelry" ] },
+    "$KRI_Clothing": { "section": "$KRI_Recycling", "keywords": [ "KRI_CatClothing" ] },
+    "$KRI_Misc": { "section": "$KRI_Recycling", "keywords": [ "KRI_CatMisc" ] }
+  }
+}

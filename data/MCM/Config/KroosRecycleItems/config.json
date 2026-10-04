@@ -1,0 +1,247 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Exit-9B/MCM-Helper/main/docs/config.schema.json",
+  "modName": "KroosRecycleItems",
+  "displayName": "$KRI_ModName",
+  "minMcmVersion": 13,
+  "pluginRequirements": [
+    "KroosRecycleItems.esl"
+  ],
+  "pages": [
+    {
+      "pageDisplayName": "$KRI_PageSettings",
+      "cursorFillMode": "topToBottom",
+      "content": [
+        {
+          "text": "$KRI_HeaderRecycling",
+          "type": "header"
+        },
+        {
+          "id": "bPartial:General",
+          "text": "$KRI_Partial",
+          "type": "toggle",
+          "help": "$KRI_PartialHelp",
+          "groupControl": 1,
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "iFullMode:General",
+          "text": "$KRI_FullMode",
+          "type": "enum",
+          "help": "$KRI_FullModeHelp",
+          "groupCondition": {
+            "NOT": 1
+          },
+          "valueOptions": {
+            "options": [
+              "$KRI_Mode1",
+              "$KRI_Mode2",
+              "$KRI_Mode3"
+            ],
+            "shortNames": [
+              "$KRI_Mode1Short",
+              "$KRI_Mode2Short",
+              "$KRI_Mode3Short"
+            ],
+            "sourceType": "ModSettingInt"
+          }
+        },
+        {
+          "id": "fRate:General",
+          "text": "$KRI_Rate",
+          "type": "slider",
+          "help": "$KRI_RateHelp",
+          "valueOptions": {
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          },
+          "groupCondition": 1
+        },
+        {
+          "id": "fExperience:General",
+          "text": "$KRI_Experience",
+          "type": "slider",
+          "help": "$KRI_ExperienceHelp",
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "text": "$KRI_HeaderEnchanted",
+          "type": "header"
+        },
+        {
+          "id": "fSmithing:Enchanted",
+          "text": "$KRI_EnchSmithing",
+          "type": "slider",
+          "help": "$KRI_EnchSmithingHelp",
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fEnchanting:Enchanted",
+          "text": "$KRI_EnchEnchanting",
+          "type": "slider",
+          "help": "$KRI_EnchEnchantingHelp",
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "bStaffLevels:Enchanted",
+          "text": "$KRI_StaffLevels",
+          "type": "toggle",
+          "help": "$KRI_StaffLevelsHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "text": "$KRI_HeaderProgression",
+          "type": "header",
+          "position": 1
+        },
+        {
+          "id": "fSkillStart:Progression",
+          "text": "$KRI_SkillStart",
+          "type": "slider",
+          "help": "$KRI_SkillStartHelp",
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0}",
+            "sourceType": "ModSettingFloat"
+          },
+          "groupCondition": 1
+        },
+        {
+          "id": "fSkillGuarantee:Progression",
+          "text": "$KRI_SkillGuarantee",
+          "type": "slider",
+          "help": "$KRI_SkillGuaranteeHelp",
+          "valueOptions": {
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0}",
+            "sourceType": "ModSettingFloat"
+          },
+          "groupCondition": 1
+        },
+        {
+          "id": "fSkillMax:Progression",
+          "text": "$KRI_SkillMax",
+          "type": "slider",
+          "help": "$KRI_SkillMaxHelp",
+          "valueOptions": {
+            "min": 2,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0}",
+            "sourceType": "ModSettingFloat"
+          },
+          "groupCondition": 1
+        },
+        {
+          "id": "fSecondaryStart:Progression",
+          "text": "$KRI_SecondaryStart",
+          "type": "slider",
+          "help": "$KRI_SecondaryHelp",
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          },
+          "groupCondition": 1
+        },
+        {
+          "id": "fSecondaryMid:Progression",
+          "text": "$KRI_SecondaryMid",
+          "type": "slider",
+          "help": "$KRI_SecondaryHelp",
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          },
+          "groupCondition": 1
+        },
+        {
+          "id": "fSecondaryMax:Progression",
+          "text": "$KRI_SecondaryMax",
+          "type": "slider",
+          "help": "$KRI_SecondaryHelp",
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          },
+          "groupCondition": 1
+        },
+        {
+          "text": "$KRI_HeaderRestart",
+          "type": "header"
+        },
+        {
+          "id": "iClothMaterial:General",
+          "text": "$KRI_ClothMaterial",
+          "type": "enum",
+          "help": "$KRI_ClothMaterialHelp",
+          "valueOptions": {
+            "options": [
+              "$KRI_ClothLinen",
+              "$KRI_ClothStrips"
+            ],
+            "sourceType": "ModSettingInt"
+          }
+        },
+        {
+          "id": "iPlateMaterial:General",
+          "text": "$KRI_PlateMaterial",
+          "type": "enum",
+          "help": "$KRI_PlateMaterialHelp",
+          "valueOptions": {
+            "options": [
+              "$KRI_PlateClay",
+              "$KRI_PlateIron"
+            ],
+            "sourceType": "ModSettingInt"
+          }
+        },
+        {
+          "id": "bStaves:General",
+          "text": "$KRI_Staves",
+          "type": "toggle",
+          "help": "$KRI_StavesHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/release",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md-v143",
+        "KRI_COMMONLIB_DIR": "$env{KRI_COMMONLIB_DIR}"
+      }
+    }
+  ],
+  "buildPresets": [ { "name": "release", "configurePreset": "release" } ]
+}

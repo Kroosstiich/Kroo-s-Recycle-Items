@@ -1,0 +1,7 @@
+build/
+.claude/
+.codex/
+nexus/
+tools/local-paths.ps1
+tools/icon-preview.png
+__pycache__/

@@ -1,0 +1,23 @@
+{
+  "comment": "Miscellaneous items without a recipe. An item matches the first rule one of whose words appears in the file name of its 3D model (lowercase, no folder). 'lot' copies are recycled together into 'count' units of 'material' (Plugin|FormID), at the 'smelter' or the 'tanningRack'. 'materialIron' replaces 'material' when the MCM says simple plates give iron. Rules decided with Kevin on 2026-10-03.",
+  "rules": [
+    { "words": [ "dwefork", "dwespoon", "dweknife", "dwecup" ], "lot": 3, "material": "Skyrim.esm|0xDB8A2", "count": 1, "station": "smelter" },
+    { "words": [ "dwebowl", "dweplate", "dwemerbowl" ], "lot": 2, "material": "Skyrim.esm|0xDB8A2", "count": 1, "station": "smelter" },
+    { "words": [ "dwemerpot", "dwepot" ], "lot": 1, "material": "Skyrim.esm|0xDB8A2", "count": 1, "station": "smelter" },
+
+    { "words": [ "silverjug", "silverplatter", "silvercandlestick" ], "lot": 1, "material": "Skyrim.esm|0x5ACE3", "count": 1, "station": "smelter" },
+    { "words": [ "silvergoblet", "silverplate", "silverbowl" ], "lot": 2, "material": "Skyrim.esm|0x5ACE3", "count": 1, "station": "smelter" },
+    { "words": [ "golden", "goldgoblet" ], "lot": 1, "material": "Skyrim.esm|0x5AD9E", "count": 1, "station": "smelter" },
+
+    { "words": [ "castironpot", "kettle", "candlelantern", "iron01", "shovel", "pitchfork", "saw01", "blacksmithnovicehammer", "blacksmithnovicetongs", "torturetool", "ruinsscissor", "ruinsscalpel", "ruinsbrainpick", "ruinsknife", "spigot" ], "lot": 1, "material": "Skyrim.esm|0x5ACE4", "count": 1, "station": "smelter" },
+    { "words": [ "basicfork", "basicknife" ], "lot": 3, "material": "HearthFires.esm|0x300F", "count": 1, "station": "smelter" },
+
+    { "words": [ "basicplate", "glazed" ], "lot": 2, "material": "HearthFires.esm|0x3043", "materialIron": "Skyrim.esm|0x5ACE4", "count": 1, "station": "smelter" },
+    { "words": [ "empty" ], "lot": 2, "material": "HearthFires.esm|0x5A69", "count": 1, "station": "smelter" },
+
+    { "words": [ "basictankard", "flagon01", "tankardblood" ], "lot": 2, "material": "Skyrim.esm|0x6F993", "count": 1, "station": "tanningRack" },
+    { "words": [ "basket" ], "lot": 1, "material": "HearthFires.esm|0x5A68", "count": 1, "station": "tanningRack" },
+    { "words": [ "woodenbowl", "woodenplate", "woodenladle", "flute" ], "lot": 2, "material": "Skyrim.esm|0x6F993", "count": 1, "station": "tanningRack" },
+    { "words": [ "bucket", "broom", "shipoar", "lute", "drum" ], "lot": 1, "material": "Skyrim.esm|0x6F993", "count": 1, "station": "tanningRack" }
+  ]
+}
