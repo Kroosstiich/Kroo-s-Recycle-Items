@@ -8,6 +8,8 @@ longer use at the smelter, the tanning rack and the staff enchanter, and get cra
 - A confirmation box shows what you will get and your chances; a second box shows what you recovered.
 - MCM (MCM Helper) and a FOMOD installer, in English and French.
 
+**Download:** [Kroo's Recycle Items on Nexus Mods](https://www.nexusmods.com/skyrimspecialedition/mods/194027)
+
 ## Requirements
 
 - Skyrim Special Edition, Anniversary Edition runtime (1.6 or later; tested on 1.7.104). Not for 1.5.97 or VR.
