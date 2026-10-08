@@ -466,12 +466,15 @@ namespace KRI::RecycleMenu
 
 	void InstallHooks()
 	{
-		if (!REL::Module::IsAE()) {
-			SKSE::log::error("Version du jeu non AE : section RECYCLAGE désactivée (CraftingCategories est AE seulement)");
+		if (REL::Module::IsVR()) {
+			SKSE::log::error("Skyrim VR n'est pas pris en charge : section RECYCLAGE désactivée");
 			return;
 		}
 		// ConstructibleObjectMenu::UpdateItemList -> SetItemEntryData, the call CraftingCategories also wraps.
-		const REL::Relocation<std::uintptr_t> target{ REL::ID(51401), 0x2C8 };
+		// SE 1.5.97: ID 50510 (SE id of AE 51401: CraftingCategories' VR address 0x89B630 minus this region's VR-SE
+		// gap 0x2B590 gives SE 0x8700A0), and the call sits at +0x22D as in CraftingCategories' VR build. Untested in
+		// game on SE: the 0xE8 check below disables the section rather than patch a wrong address.
+		const REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(50510, 51401), REL::Relocate(0x22D, 0x2C8) };
 		if (*reinterpret_cast<const std::uint8_t*>(target.address()) != 0xE8) {
 			SKSE::log::error("Appel attendu introuvable dans UpdateItemList : section RECYCLAGE désactivée");
 			return;
