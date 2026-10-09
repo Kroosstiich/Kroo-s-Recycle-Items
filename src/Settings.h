@@ -33,6 +33,11 @@ namespace KRI
 		float enchantEnchanting{ 50.0f };  // Enchanting needed to recycle an enchanted item
 		bool  staffNeedsLevels{ true };    // staves are enchanted by nature: the same levels apply to them
 
+		// RECYCLING categories shown (weapons, armor, jewelry, clothing, miscellaneous items), and whether items
+		// without a recipe of their own may borrow one from a similar item.
+		std::array<bool, 5> categories{ true, true, true, true, true };
+		bool                borrowedRecipes{ true };
+
 		// Re-read both files; cheap, done every time a smelter or tanning rack opens.
 		static void Load();
 

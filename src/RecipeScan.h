@@ -39,6 +39,10 @@ namespace KRI::RecipeScan
 	// The crafting recipe a_item is recycled from (its own, or its template's); nullptr when not recyclable.
 	[[nodiscard]] const RE::BGSConstructibleObject* ReferenceRecipe(const RE::TESBoundObject* a_item);
 
+	// True when a_item has no recipe of its own and borrows one from a similar item (same material and kind of
+	// weapon or armor, or the default staff recipe).
+	[[nodiscard]] bool IsBorrowed(const RE::TESBoundObject* a_item);
+
 	// Ingots come out of a smelter, leather out of a tanning rack (hides count as leather), gems by keyword.
 	[[nodiscard]] Family FamilyOf(const RE::TESBoundObject* a_material);
 

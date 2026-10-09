@@ -114,6 +114,64 @@
           }
         },
         {
+          "text": "$KRI_HeaderCategories",
+          "type": "header"
+        },
+        {
+          "id": "bWeapons:Categories",
+          "text": "$KRI_Weapons",
+          "type": "toggle",
+          "help": "$KRI_CategoryHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bArmor:Categories",
+          "text": "$KRI_Armor",
+          "type": "toggle",
+          "help": "$KRI_CategoryHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bJewelry:Categories",
+          "text": "$KRI_Jewelry",
+          "type": "toggle",
+          "help": "$KRI_CategoryHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bClothing:Categories",
+          "text": "$KRI_Clothing",
+          "type": "toggle",
+          "help": "$KRI_CategoryHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bMisc:Categories",
+          "text": "$KRI_Misc",
+          "type": "toggle",
+          "help": "$KRI_CategoryHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bBorrowed:Categories",
+          "text": "$KRI_Borrowed",
+          "type": "toggle",
+          "help": "$KRI_BorrowedHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
           "text": "$KRI_HeaderProgression",
           "type": "header",
           "position": 1

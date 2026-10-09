@@ -127,6 +127,10 @@ namespace KRI::RecycleMenu
 				if (station == Station::kNone || (station != Station::kBoth && station != a_bench)) {
 					continue;
 				}
+				const auto& settings = Settings::Get();
+				if (!settings.categories[std::to_underlying(CategoryOf(item))] || (!settings.borrowedRecipes && RecipeScan::IsBorrowed(item))) {
+					continue;
+				}
 				std::int32_t worn = 0;
 				if (entry->extraLists) {
 					for (const auto xList : *entry->extraLists) {

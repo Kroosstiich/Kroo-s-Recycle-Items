@@ -32,6 +32,7 @@ namespace KRI::RecipeScan
 		{
 			Station                           station;
 			const RE::BGSConstructibleObject* recipe;
+			bool                              borrowed{ false };  // recipe of a similar item (see IsBorrowed)
 		};
 
 		std::unordered_map<const RE::TESBoundObject*, ItemData> g_items;
@@ -178,6 +179,23 @@ namespace KRI::RecipeScan
 			std::vector<Ingredient> ingredients;
 			Expand(a_recipe, 1.0f, 0, ingredients);
 			return !ingredients.empty();
+		}
+
+		// The ingot, leather or gem a recipe is mostly made of, by gold value; nullptr when it has none.
+		const RE::TESForm* MainMaterial(const RE::BGSConstructibleObject* a_recipe)
+		{
+			std::vector<Ingredient> ingredients;
+			Expand(a_recipe, 1.0f, 0, ingredients);
+			const RE::TESForm* main = nullptr;
+			float              best = 0.0f;
+			for (const auto& ingredient : ingredients) {
+				const float value = ingredient.count * std::max(ingredient.obj->GetGoldValue(), 1);
+				if (ingredient.family != Family::kOther && value > best) {
+					best = value;
+					main = ingredient.obj;
+				}
+			}
+			return main;
 		}
 
 		// Clothing is recycled at the tanning rack into linen or leather (Kevin, 2026-10-02): a mod recipe may stand in
@@ -478,12 +496,32 @@ namespace KRI::RecipeScan
 			}
 		}
 
-		// Fallback index, built from items that have a recipe of their own.
+		// Fallback index, built from items that have a recipe of their own. A material keyword can lie (vanilla
+		// tags the Hunting Bow as steel, a mod may tag an ebony bow as steel; reported on 2026-10-09): a recipe only
+		// stands in for its keyword when made of the material most recipes of that keyword are made of.
+		std::unordered_map<const RE::BGSKeyword*, std::unordered_map<const RE::TESForm*, std::uint32_t>> votes;
+		for (const auto& [created, recipe] : recipes) {
+			const auto item = created->As<RE::TESBoundObject>();
+			const auto material = item ? MaterialKeyword(item) : nullptr;
+			const auto main = material ? MainMaterial(recipe.cobj) : nullptr;
+			if (main) {
+				++votes[material][main];
+			}
+		}
+		std::unordered_map<const RE::BGSKeyword*, const RE::TESForm*> usualMaterial;
+		for (const auto& [keyword, counts] : votes) {
+			usualMaterial[keyword] = std::ranges::max_element(counts, {}, [](const auto& a_pair) { return a_pair.second; })->first;
+		}
+		std::uint32_t                                            unusualRecipes = 0;
 		std::unordered_map<FallbackKey, Recipe, FallbackKeyHash> fallbacks;
 		for (const auto& [created, recipe] : recipes) {
 			const auto item = created->As<RE::TESBoundObject>();
 			const auto material = item ? MaterialKeyword(item) : nullptr;
 			if (!material || !GivesMaterials(recipe.cobj)) {
+				continue;
+			}
+			if (MainMaterial(recipe.cobj) != usualMaterial[material]) {
+				++unusualRecipes;
 				continue;
 			}
 			for (const auto key : { FallbackKey{ item->IsWeapon(), material, ShapeOf(item) }, FallbackKey{ item->IsWeapon(), material, 0 } }) {
@@ -573,6 +611,7 @@ namespace KRI::RecipeScan
 			++stats.items;
 
 			bool                              viaTemplate = false;
+			bool                              borrowed = false;
 			const RE::BGSConstructibleObject* recipe = DirectOrTemplate(a_item, &viaTemplate);
 			if (recipe && !GivesMaterials(recipe)) {
 				recipe = nullptr;
@@ -592,6 +631,7 @@ namespace KRI::RecipeScan
 				}
 				if (recipe) {
 					++stats.fallback;
+					borrowed = true;
 				}
 			}
 			if (const auto armor = a_item->As<RE::TESObjectARMO>(); !recipe && armor && (armor->IsClothing() || IsJewelry(armor))) {
@@ -610,6 +650,7 @@ namespace KRI::RecipeScan
 			if (const auto weap = a_item->As<RE::TESObjectWEAP>();
 				!recipe && weap && weap->GetWeaponType() == RE::WEAPON_TYPE::kStaff && staffFallback) {
 				recipe = staffFallback;
+				borrowed = true;
 				++staffFallbacks;
 			}
 			if (recipe && BenchId(recipe) == "DLC2StaffEnchanter"sv) {
@@ -618,7 +659,7 @@ namespace KRI::RecipeScan
 					return;
 				}
 				++perStation[std::to_underlying(Station::kStaffEnchanter)];
-				g_items[a_item] = { Station::kStaffEnchanter, recipe };
+				g_items[a_item] = { Station::kStaffEnchanter, recipe, borrowed };
 				return;
 			}
 			if (!recipe) {
@@ -655,7 +696,7 @@ namespace KRI::RecipeScan
 			if (gem && armo && armo->HasKeywordString("ArmorJewelry"sv)) {
 				++jewelryGem;
 				++perStation[std::to_underlying(Station::kSmelter)];
-				g_items[a_item] = { Station::kSmelter, recipe };
+				g_items[a_item] = { Station::kSmelter, recipe, borrowed };
 				return;
 			}
 			Station station = Station::kNone;
@@ -674,7 +715,7 @@ namespace KRI::RecipeScan
 				noMaterial.push_back(fmt::format("{} — {} — {}", Describe(a_item), FileOf(a_item), DescribeRecipe(recipe, mats)));
 			}
 			++perStation[std::to_underlying(station)];
-			g_items[a_item] = { station, recipe };
+			g_items[a_item] = { station, recipe, borrowed };
 		};
 		for (const auto armo : dataHandler->GetFormArray<RE::TESObjectARMO>()) {
 			if (armo) {
@@ -743,6 +784,7 @@ namespace KRI::RecipeScan
 			noRecipe += stats.noRecipe;
 		}
 		SKSE::log::info("  recette de secours (même matériau) : {} même forme + {} matériau seul", fallbackExact, fallbackMaterial);
+		SKSE::log::info("  recettes écartées comme secours (matériau inhabituel pour leur mot-clé) : {}", unusualRecipes);
 		SKSE::log::info("  vêtements / bijoux par emplacement : {} recette d'un mod + {} recette par défaut", clothingFromMods, clothingDefault);
 		SKSE::log::info("  sans recette : {}", noRecipe);
 		SKSE::log::info("Objets divers recyclables : {} ({} règles)", g_lots.size(), clutterRules.size());
@@ -823,6 +865,12 @@ namespace KRI::RecipeScan
 	{
 		const auto it = g_items.find(a_item);
 		return it != g_items.end() ? it->second.recipe : nullptr;
+	}
+
+	bool IsBorrowed(const RE::TESBoundObject* a_item)
+	{
+		const auto it = g_items.find(a_item);
+		return it != g_items.end() && it->second.borrowed;
 	}
 
 	Family FamilyOf(const RE::TESBoundObject* a_material)

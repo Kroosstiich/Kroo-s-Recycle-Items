@@ -142,39 +142,87 @@ namespace KRI::Recycler
 										   SkillLevel(RE::ActorValue::kEnchanting) < settings.enchantEnchanting);
 		}
 
-		void Recycle(RE::TESBoundObject* a_item, Station a_bench)
+		// Plain copies (not worn, enchanted, improved, renamed or favorite) the player carries: "Recycle all"
+		// only takes those, the special ones stay one at a time with their own warning.
+		std::int32_t PlainCopies(RE::TESBoundObject* a_item)
 		{
 			const auto player = RE::PlayerCharacter::GetSingleton();
-			const auto copy = PickCopy(a_item);
-			if (!player || !copy.found || LacksLevels(a_item, copy)) {
+			if (!player) {
+				return 0;
+			}
+			auto       inventory = player->GetInventory([a_item](RE::TESBoundObject& a_obj) { return &a_obj == a_item; });
+			const auto it = inventory.find(a_item);
+			if (it == inventory.end() || it->second.first <= 0 || !it->second.second || it->second.second->IsQuestObject()) {
+				return 0;
+			}
+			std::int32_t plain = it->second.first;
+			if (const auto& lists = it->second.second->extraLists) {
+				for (const auto xList : *lists) {
+					if (xList && (xList->HasType<RE::ExtraWorn>() || xList->HasType<RE::ExtraWornLeft>() || xList->HasType<RE::ExtraEnchantment>() ||
+									 xList->HasType<RE::ExtraHealth>() || xList->HasType<RE::ExtraTextDisplayData>() || xList->HasType<RE::ExtraHotkey>())) {
+						plain -= xList->GetCount();
+					}
+				}
+			}
+			return std::max(plain, 0);
+		}
+
+		// Recycle a_times lots of a_item (1 = the "Yes" button), each with its own rolls, then show one result box.
+		void Recycle(RE::TESBoundObject* a_item, Station a_bench, std::int32_t a_times)
+		{
+			const auto player = RE::PlayerCharacter::GetSingleton();
+			if (!player) {
+				return;
+			}
+			const auto lot = RecipeScan::LotSize(a_item);
+			const auto yields = ComputeYields(a_item, a_bench);
+
+			static std::mt19937                       rng{ std::random_device{}() };
+			std::uniform_real_distribution<float>     roll{ 0.0f, 1.0f };
+			std::vector<std::pair<RE::TESBoundObject*, std::int32_t>> totals;
+			float                                     experience = 0.0f;
+			std::int32_t                              done = 0;
+			bool                                      special = false;
+			for (; done < a_times; ++done) {
+				const auto copy = PickCopy(a_item);
+				// "Recycle all" stops before the first special copy; a single recycle may take one.
+				if (!copy.found || LacksLevels(a_item, copy) || (a_times > 1 && copy.special)) {
+					break;
+				}
+				special = special || copy.special;
+				player->RemoveItem(a_item, lot, RE::ITEM_REMOVE_REASON::kRemove, lot > 1 ? nullptr : copy.extra, nullptr);
+				for (const auto& yield : yields) {
+					const auto count = yield.guaranteed + (yield.chance > 0.0f && roll(rng) < yield.chance ? 1 : 0);
+					if (count <= 0) {
+						continue;
+					}
+					if (const auto it = std::ranges::find(totals, yield.material, &std::pair<RE::TESBoundObject*, std::int32_t>::first); it != totals.end()) {
+						it->second += count;
+					} else {
+						totals.emplace_back(yield.material, count);
+					}
+				}
+				if (const auto recipe = RecipeScan::ReferenceRecipe(a_item); recipe && recipe->createdItem) {
+					experience += recipe->CalcSkillUse() * Settings::Get().experienceShare;
+				}
+			}
+			if (done == 0) {
 				SKSE::log::warn("Recyclage annulé : {} indisponible ou niveaux insuffisants", a_item->GetName());
 				return;
 			}
-			const auto yields = ComputeYields(a_item, a_bench);
 
-			const auto lot = RecipeScan::LotSize(a_item);
-			player->RemoveItem(a_item, lot, RE::ITEM_REMOVE_REASON::kRemove, lot > 1 ? nullptr : copy.extra, nullptr);
-
-			static std::mt19937                   rng{ std::random_device{}() };
-			std::uniform_real_distribution<float> roll{ 0.0f, 1.0f };
-			std::string                           summary;
-			for (const auto& yield : yields) {
-				const auto count = yield.guaranteed + (yield.chance > 0.0f && roll(rng) < yield.chance ? 1 : 0);
-				if (count > 0) {
-					player->AddObjectToContainer(yield.material, nullptr, count, nullptr);
-					summary += fmt::format("{}{} x{}", summary.empty() ? "" : ", ", yield.material->GetName(), count);
-				}
+			std::string summary;
+			for (const auto& [material, count] : totals) {
+				player->AddObjectToContainer(material, nullptr, count, nullptr);
+				summary += fmt::format("{}{} x{}", summary.empty() ? "" : ", ", material->GetName(), count);
 			}
-
-			float experience = 0.0f;
-			if (const auto recipe = RecipeScan::ReferenceRecipe(a_item); recipe && recipe->createdItem) {
-				experience = recipe->CalcSkillUse() * Settings::Get().experienceShare;
+			if (experience > 0.0f) {
 				player->AddSkillExperience(RE::ActorValue::kSmithing, experience);
 			}
 
-			const auto message = summary.empty() ? fmt::format("{} recyclé : rien récupéré", a_item->GetName()) :
-			                                       fmt::format("{} recyclé : {}", a_item->GetName(), summary);
-			SKSE::log::info("{} (XP Forge +{:.2f}, exemplaire {})", message, experience, copy.special ? "spécial" : "simple");
+			const auto message = summary.empty() ? fmt::format("{} x{} recyclé : rien récupéré", a_item->GetName(), done * lot) :
+			                                       fmt::format("{} x{} recyclé : {}", a_item->GetName(), done * lot, summary);
+			SKSE::log::info("{} (XP Forge +{:.2f}, exemplaire {})", message, experience, special ? "spécial" : "simple");
 
 			// The HUD is hidden behind the crafting menu: show the result in a box the player has to see.
 			RE::BSString               text{ (summary.empty() ? Text::Get("$KRI_ResultNothing") : Text::Format("$KRI_Result", summary)).c_str() };
@@ -189,21 +237,26 @@ namespace KRI::Recycler
 		class ConfirmCallback : public RE::IMessageBoxCallback
 		{
 		public:
-			ConfirmCallback(RE::TESBoundObject* a_item, Station a_bench) :
+			ConfirmCallback(RE::TESBoundObject* a_item, Station a_bench, std::int32_t a_all) :
 				_item(a_item),
-				_bench(a_bench)
+				_bench(a_bench),
+				_all(a_all)
 			{}
 
+			// Buttons: Yes, then "Recycle all" when offered (_all > 1), then No.
 			void Run(std::uint8_t a_button) override
 			{
 				if (a_button == 0) {
-					Recycle(_item, _bench);
+					Recycle(_item, _bench, 1);
+				} else if (a_button == 1 && _all > 1) {
+					Recycle(_item, _bench, _all);
 				}
 			}
 
 		private:
 			RE::TESBoundObject* _item;
 			Station             _bench;
+			std::int32_t        _all;  // lots "Recycle all" takes; 0 or 1 = no such button
 		};
 	}
 
@@ -344,11 +397,17 @@ namespace KRI::Recycler
 			body += "\n" + Text::Get("$KRI_MayGetNothing");
 		}
 
+		// "Recycle all" when at least two lots of plain copies are there (Kevin, 2026-10-09).
+		const auto all = PlainCopies(a_item) / lot;
+
 		RE::BSString         text{ body.c_str() };
 		RE::BSTArray<RE::BSString> buttons;
 		buttons.push_back(RE::BSString{ Text::GameSetting("sYes", "Yes").c_str() });
+		if (all > 1) {
+			buttons.push_back(RE::BSString{ Text::Format("$KRI_RecycleAll", all * lot).c_str() });
+		}
 		buttons.push_back(RE::BSString{ Text::GameSetting("sNo", "No").c_str() });
-		const RE::BSTSmartPointer<RE::IMessageBoxCallback> callback{ new ConfirmCallback(a_item, a_bench) };
+		const RE::BSTSmartPointer<RE::IMessageBoxCallback> callback{ new ConfirmCallback(a_item, a_bench, all) };
 		RE::MessageBoxMenu::Create(text, callback, 0, 4, 10, buttons);
 	}
 }

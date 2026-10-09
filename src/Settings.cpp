@@ -34,6 +34,11 @@ namespace KRI
 			number("Enchanted", "fSmithing", a_settings.enchantSmithing);
 			number("Enchanted", "fEnchanting", a_settings.enchantEnchanting);
 			a_settings.staffNeedsLevels = ini.GetBoolValue("Enchanted", "bStaffLevels", a_settings.staffNeedsLevels);
+			constexpr std::array kCategoryKeys{ "bWeapons", "bArmor", "bJewelry", "bClothing", "bMisc" };
+			for (std::size_t i = 0; i < kCategoryKeys.size(); ++i) {
+				a_settings.categories[i] = ini.GetBoolValue("Categories", kCategoryKeys[i], a_settings.categories[i]);
+			}
+			a_settings.borrowedRecipes = ini.GetBoolValue("Categories", "bBorrowed", a_settings.borrowedRecipes);
 			number("Progression", "fSkillStart", a_settings.skillStart);
 			number("Progression", "fSkillGuarantee", a_settings.skillGuarantee);
 			number("Progression", "fSkillMax", a_settings.skillMax);
