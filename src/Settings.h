@@ -38,6 +38,28 @@ namespace KRI
 		std::array<bool, 5> categories{ true, true, true, true, true };
 		bool                borrowedRecipes{ true };
 
+		// Recycling orders at a blacksmith (decided with Kevin on 2026-10-10).
+		bool  ordersEnabled{ true };
+		float orderShare{ 0.10f };     // price: share of the item's value...
+		float orderMinPrice{ 5.0f };   // ...but at least this, per item (per lot for miscellaneous items)
+		float orderHours{ 24.0f };     // in-game hours before the order is ready
+		float orderSkill{ 50.0f };     // the blacksmith recycles like a player with this Smithing
+		float holdHaafingar{ 1.5f };   // price factor per hold
+		float holdReach{ 1.3f };
+		float holdEastmarch{ 1.2f };
+		float holdSolstheim{ 1.2f };
+		float holdRift{ 1.1f };
+		float holdStronghold{ 1.0f };
+		float holdWhiterun{ 0.9f };
+		float holdSmall{ 0.8f };       // Falkreath, the Pale, Hjaalmarch, Winterhold
+		float discountOrc{ 0.40f };    // an orc in an orc stronghold
+		float surchargeNonNord{ 0.30f };  // anyone but a Nord in Eastmarch
+		float discountThieves{ 0.25f };   // Thieves Guild member in the Rift
+		float discountThane{ 0.20f };     // thane of the hold
+		float discountCompanions{ 0.20f };  // Companion at Eorlund's Skyforge
+		float discountCivilWar{ 0.10f };    // Legion in Haafingar, Stormcloak in Eastmarch
+		bool  spouseFree{ true };           // married to the blacksmith
+
 		// Re-read both files; cheap, done every time a smelter or tanning rack opens.
 		static void Load();
 

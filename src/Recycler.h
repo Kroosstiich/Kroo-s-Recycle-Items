@@ -12,8 +12,10 @@ namespace KRI::Recycler
 		bool                main{ false };
 	};
 
-	// Materials a_item gives back at a_bench, with the player's current Smithing skill.
-	[[nodiscard]] std::vector<Yield> ComputeYields(const RE::TESBoundObject* a_item, RecipeScan::Station a_bench);
+	// Materials a_item gives back at a_bench, with the player's current Smithing skill, or as a plain item
+	// recycled at a_skill (a blacksmith working on an order).
+	[[nodiscard]] std::vector<Yield> ComputeYields(const RE::TESBoundObject* a_item, RecipeScan::Station a_bench,
+		std::optional<float> a_skill = std::nullopt);
 
 	// One label per material for the menu's ingredient line: "Lingot de fer (23 %)", "Lingot de fer x2".
 	[[nodiscard]] std::vector<std::string> YieldLabels(const RE::TESBoundObject* a_item, RecipeScan::Station a_bench);

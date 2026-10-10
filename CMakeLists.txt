@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(KroosRecycleItems VERSION 1.1.0 LANGUAGES CXX)
+project(KroosRecycleItems VERSION 1.2.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,6 +22,7 @@ add_commonlibsse_plugin(${PROJECT_NAME}
 	AUTHOR "Kroosstii"
 	SOURCES
 		src/main.cpp
+		src/Orders.cpp
 		src/RecipeScan.cpp
 		src/RecycleMenu.cpp
 		src/Recycler.cpp

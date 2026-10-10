@@ -300,6 +300,297 @@
           }
         }
       ]
+    },
+    {
+      "pageDisplayName": "$KRI_PageOrders",
+      "cursorFillMode": "topToBottom",
+      "content": [
+        {
+          "text": "$KRI_HeaderOrders",
+          "type": "header"
+        },
+        {
+          "id": "bEnabled:Orders",
+          "text": "$KRI_OrdersEnabled",
+          "type": "toggle",
+          "help": "$KRI_OrdersEnabledHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          },
+          "groupControl": 2
+        },
+        {
+          "id": "fPrice:Orders",
+          "text": "$KRI_OrderPriceShare",
+          "type": "slider",
+          "help": "$KRI_OrderPriceShareHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fMinPrice:Orders",
+          "text": "$KRI_OrderMinPrice",
+          "type": "slider",
+          "help": "$KRI_OrderMinPriceHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fHours:Orders",
+          "text": "$KRI_OrderHours",
+          "type": "slider",
+          "help": "$KRI_OrderHoursHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 1,
+            "max": 168,
+            "step": 1,
+            "formatString": "{0} h",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fSkill:Orders",
+          "text": "$KRI_OrderSkill",
+          "type": "slider",
+          "help": "$KRI_OrderSkillHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 15,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "bSpouseFree:Orders",
+          "text": "$KRI_SpouseFree",
+          "type": "toggle",
+          "help": "$KRI_SpouseFreeHelp",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          },
+          "groupCondition": 2
+        },
+        {
+          "text": "$KRI_HeaderDiscounts",
+          "type": "header"
+        },
+        {
+          "id": "fOrc:Orders",
+          "text": "$KRI_DiscountOrc",
+          "type": "slider",
+          "help": "$KRI_DiscountHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fNonNord:Orders",
+          "text": "$KRI_DiscountNonNord",
+          "type": "slider",
+          "help": "$KRI_DiscountHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fThieves:Orders",
+          "text": "$KRI_DiscountThieves",
+          "type": "slider",
+          "help": "$KRI_DiscountHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fThane:Orders",
+          "text": "$KRI_DiscountThane",
+          "type": "slider",
+          "help": "$KRI_DiscountHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fCompanions:Orders",
+          "text": "$KRI_DiscountCompanions",
+          "type": "slider",
+          "help": "$KRI_DiscountHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fCivilWar:Orders",
+          "text": "$KRI_DiscountCivilWar",
+          "type": "slider",
+          "help": "$KRI_DiscountHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "text": "$KRI_HeaderHolds",
+          "type": "header",
+          "position": 1
+        },
+        {
+          "id": "fHoldHaafingar:Orders",
+          "text": "$KRI_HoldHaafingar",
+          "type": "slider",
+          "help": "$KRI_HoldHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fHoldReach:Orders",
+          "text": "$KRI_HoldReach",
+          "type": "slider",
+          "help": "$KRI_HoldHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fHoldEastmarch:Orders",
+          "text": "$KRI_HoldEastmarch",
+          "type": "slider",
+          "help": "$KRI_HoldHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fHoldSolstheim:Orders",
+          "text": "$KRI_HoldSolstheim",
+          "type": "slider",
+          "help": "$KRI_HoldHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fHoldRift:Orders",
+          "text": "$KRI_HoldRift",
+          "type": "slider",
+          "help": "$KRI_HoldHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fHoldStronghold:Orders",
+          "text": "$KRI_HoldStronghold",
+          "type": "slider",
+          "help": "$KRI_HoldHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fHoldWhiterun:Orders",
+          "text": "$KRI_HoldWhiterun",
+          "type": "slider",
+          "help": "$KRI_HoldHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fHoldSmall:Orders",
+          "text": "$KRI_HoldSmall",
+          "type": "slider",
+          "help": "$KRI_HoldSmallHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "formatString": "{0} %",
+            "sourceType": "ModSettingFloat"
+          }
+        }
+      ]
     }
   ]
 }

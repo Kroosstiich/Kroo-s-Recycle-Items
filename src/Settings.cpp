@@ -39,6 +39,26 @@ namespace KRI
 				a_settings.categories[i] = ini.GetBoolValue("Categories", kCategoryKeys[i], a_settings.categories[i]);
 			}
 			a_settings.borrowedRecipes = ini.GetBoolValue("Categories", "bBorrowed", a_settings.borrowedRecipes);
+			a_settings.ordersEnabled = ini.GetBoolValue("Orders", "bEnabled", a_settings.ordersEnabled);
+			a_settings.spouseFree = ini.GetBoolValue("Orders", "bSpouseFree", a_settings.spouseFree);
+			percent("Orders", "fPrice", a_settings.orderShare);
+			number("Orders", "fMinPrice", a_settings.orderMinPrice);
+			number("Orders", "fHours", a_settings.orderHours);
+			number("Orders", "fSkill", a_settings.orderSkill);
+			percent("Orders", "fHoldHaafingar", a_settings.holdHaafingar);
+			percent("Orders", "fHoldReach", a_settings.holdReach);
+			percent("Orders", "fHoldEastmarch", a_settings.holdEastmarch);
+			percent("Orders", "fHoldSolstheim", a_settings.holdSolstheim);
+			percent("Orders", "fHoldRift", a_settings.holdRift);
+			percent("Orders", "fHoldStronghold", a_settings.holdStronghold);
+			percent("Orders", "fHoldWhiterun", a_settings.holdWhiterun);
+			percent("Orders", "fHoldSmall", a_settings.holdSmall);
+			percent("Orders", "fOrc", a_settings.discountOrc);
+			percent("Orders", "fNonNord", a_settings.surchargeNonNord);
+			percent("Orders", "fThieves", a_settings.discountThieves);
+			percent("Orders", "fThane", a_settings.discountThane);
+			percent("Orders", "fCompanions", a_settings.discountCompanions);
+			percent("Orders", "fCivilWar", a_settings.discountCivilWar);
 			number("Progression", "fSkillStart", a_settings.skillStart);
 			number("Progression", "fSkillGuarantee", a_settings.skillGuarantee);
 			number("Progression", "fSkillMax", a_settings.skillMax);

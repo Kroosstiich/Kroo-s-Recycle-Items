@@ -260,12 +260,13 @@ namespace KRI::Recycler
 		};
 	}
 
-	std::vector<Yield> ComputeYields(const RE::TESBoundObject* a_item, Station a_bench)
+	std::vector<Yield> ComputeYields(const RE::TESBoundObject* a_item, Station a_bench, std::optional<float> a_skill)
 	{
 		std::vector<Yield> yields;
 		const auto         ingredients = RecipeScan::IngredientsOf(a_item);
 		const auto&        settings = Settings::Get();
-		const auto         progression = ProgressionFor(a_item, PickCopy(const_cast<RE::TESBoundObject*>(a_item)));
+		const auto         progression = a_skill ? Progression{ *a_skill, settings.skillStart, settings.skillGuarantee, settings.skillMax } :
+		                                           ProgressionFor(a_item, PickCopy(const_cast<RE::TESBoundObject*>(a_item)));
 
 		// Jewelry with a gem gives the gem only; otherwise the bench decides the main material. Items with
 		// neither ingot nor leather (linen, dragon scales...) treat all their materials as main.
