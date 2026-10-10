@@ -7,6 +7,7 @@ gear you no longer use at the smelter, the tanning rack and the staff enchanter,
 - Yields come from each item's own crafting recipe, including recipes added by other mods, and rise with Smithing.
 - A confirmation box shows what you will get and your chances, with a "Recycle all" button; a second box shows
   what you recovered.
+- Recycling orders at any blacksmith: pay, come back a day later; vanilla voices, prices by hold and faction.
 - MCM (MCM Helper) and a FOMOD installer, in English and French.
 
 **Download:** [Kroo's Recycle Items on Nexus Mods](https://www.nexusmods.com/skyrimspecialedition/mods/194027)
