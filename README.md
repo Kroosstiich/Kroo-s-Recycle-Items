@@ -1,21 +1,25 @@
 # Kroo's Recycle Items
 
-An SKSE plugin for Skyrim Special Edition (Anniversary Edition runtime) that lets you recycle the gear you no
-longer use at the smelter, the tanning rack and the staff enchanter, and get crafting materials back.
+An SKSE plugin for Skyrim Special Edition (1.5.97 and the Anniversary Edition runtime) that lets you recycle the
+gear you no longer use at the smelter, the tanning rack and the staff enchanter, and get crafting materials back.
 
 - A **RECYCLING** section in the crafting menu, sorted into Weapons, Armor, Jewelry, Clothing and Miscellaneous items.
 - Yields come from each item's own crafting recipe, including recipes added by other mods, and rise with Smithing.
-- A confirmation box shows what you will get and your chances; a second box shows what you recovered.
+- A confirmation box shows what you will get and your chances, with a "Recycle all" button; a second box shows
+  what you recovered.
 - MCM (MCM Helper) and a FOMOD installer, in English and French.
 
 **Download:** [Kroo's Recycle Items on Nexus Mods](https://www.nexusmods.com/skyrimspecialedition/mods/194027)
 
 ## Requirements
 
-- Skyrim Special Edition, Anniversary Edition runtime (1.6 or later; tested on 1.7.104). Not for 1.5.97 or VR.
+- Skyrim Special Edition: the Anniversary Edition runtime (1.6 or later; tested on 1.7.104) or 1.5.97 (tested by a
+  player). Not for VR.
 - [SKSE64](https://skse.silverlock.org/)
 - [Address Library for SKSE Plugins](https://www.nexusmods.com/skyrimspecialedition/mods/32444)
-- [Constructible Object Custom Keyword System](https://www.nexusmods.com/skyrimspecialedition/mods/81409)
+- [Constructible Object Custom Keyword System](https://www.nexusmods.com/skyrimspecialedition/mods/81409); on 1.5.97,
+  also [Constructible Object Custom Keyword System NG](https://www.nexusmods.com/skyrimspecialedition/mods/81731) or
+  [C.O.C.K.S. for Skyrim 1.5](https://www.nexusmods.com/skyrimspecialedition/mods/81723)
 - [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)
 - [MCM Helper](https://www.nexusmods.com/skyrimspecialedition/mods/53000)
 
