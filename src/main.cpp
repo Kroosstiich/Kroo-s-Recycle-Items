@@ -13,7 +13,6 @@ namespace
 			KRI::RecycleMenu::InstallHooks();
 			break;
 		case SKSE::MessagingInterface::kDataLoaded:
-			SKSE::Translation::ParseTranslation("KroosRecycleItems");
 			KRI::Settings::Load();
 			KRI::Text::Load();
 			KRI::RecipeScan::Run();
