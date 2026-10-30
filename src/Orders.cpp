@@ -397,7 +397,15 @@ namespace KRI::Orders
 				g_orders.push_back(std::move(order));
 				DeleteChest();  // the items go with it: the blacksmith has them now
 				SetState(smith, 0);
-				SayPaid(smith);
+				// The price box pauses the game: say the line 3 s later, once it has resumed (Kevin, 2026-10-30).
+				std::thread([id = smith->GetFormID()] {
+					std::this_thread::sleep_for(3s);
+					SKSE::GetTaskInterface()->AddTask([id] {
+						if (const auto actor = RE::TESForm::LookupByID<RE::Actor>(id)) {
+							SayPaid(actor);
+						}
+					});
+				}).detach();
 				RE::SendHUDMessage::ShowHUDMessage(Text::Format("$KRI_OrderPlaced", static_cast<int>(Settings::Get().orderHours)).c_str());
 				SKSE::log::info("Commande passée chez {} : {} objets, {} po", smith->GetName(), _items.size(), _price);
 			}
