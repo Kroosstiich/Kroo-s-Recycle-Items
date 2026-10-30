@@ -17,7 +17,7 @@ namespace KRI::Orders
 		// KroosRecycleItems.esl (tools/make-esl.py).
 		constexpr auto       kPlugin = "KroosRecycleItems.esl"sv;
 		constexpr RE::FormID kOrderFaction = 0x801, kOrderTopic = 0x803, kOrderInfo = 0x804, kPickupTopic = 0x806, kPickupInfo = 0x807,
-							 kPaidTopic = 0x808, kChest = 0x80A, kEnabledGlobal = 0x80B;
+							 kChest = 0x80A, kEnabledGlobal = 0x80B;
 
 		// Skyrim.esm.
 		constexpr RE::FormID kGold = 0x0000000F;
@@ -74,7 +74,6 @@ namespace KRI::Orders
 		std::vector<Order> g_orders;
 
 		RE::TESFaction*       g_faction{ nullptr };
-		RE::TESTopic*         g_paidTopic{ nullptr };
 		RE::TESObjectCONT*    g_chestBase{ nullptr };
 		RE::TESGlobal*        g_enabled{ nullptr };
 		RE::FormID            g_orderInfo{ 0 };
@@ -251,22 +250,6 @@ namespace KRI::Orders
 			return price;
 		}
 
-		// Make the blacksmith say the paid line (Papyrus ObjectReference.Say, dispatched from here).
-		void SayPaid(RE::Actor* a_smith)
-		{
-			const auto vm = RE::BSScript::Internal::VirtualMachine::GetSingleton();
-			const auto policy = vm ? vm->GetObjectHandlePolicy() : nullptr;
-			if (!policy || !g_paidTopic) {
-				return;
-			}
-			const auto handle = policy->GetHandleForObject(RE::Actor::FORMTYPE, a_smith);
-			const auto args = RE::MakeFunctionArguments(static_cast<RE::TESTopic*>(g_paidTopic), static_cast<RE::Actor*>(nullptr), false);
-			RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> callback;
-			if (!vm->DispatchMethodCall(handle, "ObjectReference", "Say", args, callback)) {
-				SKSE::log::warn("Commande : réplique de paiement non jouée ({} n'a pas d'objet Papyrus)", a_smith->GetName());
-			}
-		}
-
 		void SetState(RE::Actor* a_smith, std::int8_t a_rank)
 		{
 			if (a_rank < 0) {
@@ -397,15 +380,6 @@ namespace KRI::Orders
 				g_orders.push_back(std::move(order));
 				DeleteChest();  // the items go with it: the blacksmith has them now
 				SetState(smith, 0);
-				// The price box pauses the game: say the line 3 s later, once it has resumed (Kevin, 2026-10-30).
-				std::thread([id = smith->GetFormID()] {
-					std::this_thread::sleep_for(3s);
-					SKSE::GetTaskInterface()->AddTask([id] {
-						if (const auto actor = RE::TESForm::LookupByID<RE::Actor>(id)) {
-							SayPaid(actor);
-						}
-					});
-				}).detach();
 				RE::SendHUDMessage::ShowHUDMessage(Text::Format("$KRI_OrderPlaced", static_cast<int>(Settings::Get().orderHours)).c_str());
 				SKSE::log::info("Commande passée chez {} : {} objets, {} po", smith->GetName(), _items.size(), _price);
 			}
@@ -712,12 +686,11 @@ namespace KRI::Orders
 	{
 		const auto dataHandler = RE::TESDataHandler::GetSingleton();
 		g_faction = dataHandler->LookupForm<RE::TESFaction>(kOrderFaction, kPlugin);
-		g_paidTopic = dataHandler->LookupForm<RE::TESTopic>(kPaidTopic, kPlugin);
 		g_chestBase = dataHandler->LookupForm<RE::TESObjectCONT>(kChest, kPlugin);
 		g_enabled = dataHandler->LookupForm<RE::TESGlobal>(kEnabledGlobal, kPlugin);
 		g_orderInfo = dataHandler->LookupFormID(kOrderInfo, kPlugin);
 		g_pickupInfo = dataHandler->LookupFormID(kPickupInfo, kPlugin);
-		if (!g_faction || !g_paidTopic || !g_chestBase || !g_enabled || !g_orderInfo || !g_pickupInfo) {
+		if (!g_faction || !g_chestBase || !g_enabled || !g_orderInfo || !g_pickupInfo) {
 			SKSE::log::error("Commandes chez un forgeron désactivées : formes introuvables dans {}", kPlugin);
 			return;
 		}
