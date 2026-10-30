@@ -6,6 +6,7 @@
 #include "Text.h"
 
 #include <random>
+#include <thread>
 
 namespace KRI::Orders
 {
@@ -81,6 +82,8 @@ namespace KRI::Orders
 		RE::FormID            g_pendingSmith{ 0 };  // asked for an order: the deposit box opens once the dialogue closes
 		RE::ObjectRefHandle   g_chest;              // deposit box being filled
 		RE::FormID            g_chestSmith{ 0 };
+		std::string           g_pendingNotice;          // "ready in N h": the HUD is hidden during the dialogue
+		float                 g_lastReminder{ -1.0f };  // game hours of the last reminder, -1 = not started
 
 		float Today()
 		{
@@ -338,6 +341,28 @@ namespace KRI::Orders
 			return list;
 		}
 
+		std::string ExpectedYields(const std::vector<std::pair<RE::TESBoundObject*, std::int32_t>>& a_items)
+		{
+			std::string text;
+			for (const auto& [item, count] : a_items) {
+				auto station = RecipeScan::StationOf(item);
+				station = station == Station::kBoth ? Station::kSmelter : station;
+				std::string labels;
+				for (const auto& yield : Recycler::ComputeYields(item, station, Settings::Get().orderSkill)) {
+					const auto name = yield.material->GetName();
+					const auto percent = Text::Format("$KRI_Percent", static_cast<int>(std::lround(yield.chance * 100.0f)));
+					labels += (labels.empty() ? "" : ", ") +
+					          (yield.guaranteed > 0 && yield.chance > 0.0f ? Text::Format("$KRI_YieldSurePlus", name, yield.guaranteed, percent) :
+					              yield.guaranteed > 0                     ? Text::Format("$KRI_YieldSure", name, yield.guaranteed) :
+					                                                         Text::Format("$KRI_YieldChance", name, percent));
+				}
+				const auto lot = RecipeScan::LotSize(item);
+				const auto name = lot > 1 ? Text::Format("$KRI_YieldSure", item->GetName(), lot) : std::string{ item->GetName() };
+				text += fmt::format("\n- {} : {}", name, labels.empty() ? Text::Get("$KRI_Nothing") : labels);
+			}
+			return text;
+		}
+
 		class PayCallback : public RE::IMessageBoxCallback
 		{
 		public:
@@ -425,6 +450,7 @@ namespace KRI::Orders
 			if (!refused.empty()) {
 				body += "\n\n" + Text::Get("$KRI_OrderRefused") + ItemList(refused);
 			}
+			body += "\n\n" + Text::Get("$KRI_OrderYieldHeader") + ExpectedYields(accepted);
 			body += "\n\n" + Text::Format("$KRI_OrderPrice", price.total);
 			for (const auto& note : price.notes) {
 				body += "\n" + note;
@@ -458,7 +484,32 @@ namespace KRI::Orders
 			SetState(a_smith, left <= 0.0f ? 1 : 0);
 			if (left > 0.0f && a_notify) {
 				const auto hours = std::max(static_cast<int>(std::ceil(left * 24.0f)), 1);
-				RE::SendHUDMessage::ShowHUDMessage(Text::Format("$KRI_OrderNotReady", a_smith->GetName(), hours).c_str());
+				g_pendingNotice = Text::Format("$KRI_OrderNotReady", a_smith->GetName(), hours);
+			}
+		}
+
+		// MCM reminders, checked every few seconds: one notification per order every orderReminderHours game hours.
+		void CheckReminders()
+		{
+			const auto& settings = Settings::Get();
+			const float now = Today() * 24.0f;
+			if (!settings.orderReminders || g_orders.empty() || g_lastReminder < 0.0f) {
+				g_lastReminder = now;
+				return;
+			}
+			if (now - g_lastReminder < settings.orderReminderHours) {
+				return;
+			}
+			g_lastReminder = now;
+			for (const auto& order : g_orders) {
+				const auto smith = RE::TESForm::LookupByID<RE::Actor>(order.smith);
+				if (!smith) {
+					continue;
+				}
+				const auto left = order.readyDay - Today();
+				const auto text = left <= 0.0f ? Text::Format("$KRI_OrderReminderReady", smith->GetName()) :
+				                                 Text::Format("$KRI_OrderNotReady", smith->GetName(), std::max(static_cast<int>(std::ceil(left * 24.0f)), 1));
+				RE::SendHUDMessage::ShowHUDMessage(text.c_str());
 			}
 		}
 
@@ -570,6 +621,9 @@ namespace KRI::Orders
 				if (!a_event || a_event->opening) {
 					return RE::BSEventNotifyControl::kContinue;
 				}
+				if (a_event->menuName == RE::DialogueMenu::MENU_NAME && !g_pendingNotice.empty()) {
+					AddTask([notice = std::exchange(g_pendingNotice, {})] { RE::SendHUDMessage::ShowHUDMessage(notice.c_str()); });
+				}
 				if (a_event->menuName == RE::DialogueMenu::MENU_NAME && g_pendingSmith) {
 					const auto smith = std::exchange(g_pendingSmith, 0);
 					AddTask([smith] { OpenDeposit(smith); });
@@ -641,6 +695,8 @@ namespace KRI::Orders
 			g_pendingSmith = 0;
 			g_chest = {};
 			g_chestSmith = 0;
+			g_pendingNotice.clear();
+			g_lastReminder = -1.0f;
 		}
 	}
 
@@ -671,6 +727,12 @@ namespace KRI::Orders
 		events->AddEventSink<RE::TESTopicInfoEvent>(&g_events);
 		events->AddEventSink<RE::TESActivateEvent>(&g_events);
 		RE::UI::GetSingleton()->AddEventSink<RE::MenuOpenCloseEvent>(&g_events);
+		std::thread([] {
+			for (;;) {
+				std::this_thread::sleep_for(5s);
+				SKSE::GetTaskInterface()->AddTask(CheckReminders);
+			}
+		}).detach();
 		SKSE::log::info("Commandes chez un forgeron prêtes");
 	}
 

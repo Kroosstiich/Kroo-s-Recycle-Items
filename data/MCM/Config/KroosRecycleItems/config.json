@@ -386,6 +386,30 @@
           "groupCondition": 2
         },
         {
+          "id": "bReminders:Orders",
+          "text": "$KRI_Reminders",
+          "type": "toggle",
+          "help": "$KRI_RemindersHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "fReminderHours:Orders",
+          "text": "$KRI_ReminderHours",
+          "type": "slider",
+          "help": "$KRI_ReminderHoursHelp",
+          "groupCondition": 2,
+          "valueOptions": {
+            "min": 1,
+            "max": 24,
+            "step": 1,
+            "formatString": "{0} h",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
           "text": "$KRI_HeaderDiscounts",
           "type": "header"
         },

@@ -59,6 +59,8 @@ namespace KRI
 		float discountCompanions{ 0.20f };  // Companion at Eorlund's Skyforge
 		float discountCivilWar{ 0.10f };    // Legion in Haafingar, Stormcloak in Eastmarch
 		bool  spouseFree{ true };           // married to the blacksmith
+		bool  orderReminders{ true };       // notifications about orders in progress
+		float orderReminderHours{ 2.0f };   // game hours between two reminders
 
 		// Re-read both files; cheap, done every time a smelter or tanning rack opens.
 		static void Load();

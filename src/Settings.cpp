@@ -41,6 +41,8 @@ namespace KRI
 			a_settings.borrowedRecipes = ini.GetBoolValue("Categories", "bBorrowed", a_settings.borrowedRecipes);
 			a_settings.ordersEnabled = ini.GetBoolValue("Orders", "bEnabled", a_settings.ordersEnabled);
 			a_settings.spouseFree = ini.GetBoolValue("Orders", "bSpouseFree", a_settings.spouseFree);
+			a_settings.orderReminders = ini.GetBoolValue("Orders", "bReminders", a_settings.orderReminders);
+			number("Orders", "fReminderHours", a_settings.orderReminderHours);
 			percent("Orders", "fPrice", a_settings.orderShare);
 			number("Orders", "fMinPrice", a_settings.orderMinPrice);
 			number("Orders", "fHours", a_settings.orderHours);
